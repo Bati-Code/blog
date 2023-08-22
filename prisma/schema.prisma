@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Menu {
+  menuId    Int      @id
+  name      String   @db.VarChar(50)
+  posts     Post[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Post {
+  id           Int           @id @default(autoincrement())
+  menu         Menu          @relation(fields: [menuId], references: [menuId])
+  menuId       Int
+  content      PostContent?
+  published    Boolean       @default(true)
+  thumbnail    String
+  view         Int           @default(0)
+  categories   Category[]
+  PostFavorite PostFavorite?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model PostContent {
+  id      Post   @relation(fields: [postId], references: [id])
+  postId  Int    @id @unique
+  content String @db.VarChar(500)
+}
+
+model PostFavorite {
+  id     Post   @relation(fields: [postId], references: [id])
+  postId Int    @id @unique
+  users  User[]
+}
+
+model Category {
+  categoryId Int      @id
+  name       String   @db.VarChar(50)
+  posts      Post[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model User {
+  userId    String         @id
+  userPw    String
+  userName  String
+  comments  Comment[]
+  favorites PostFavorite[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  author    User     @relation(fields: [authorId], references: [userId])
+  authorId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
