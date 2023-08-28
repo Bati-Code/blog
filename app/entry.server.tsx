@@ -6,6 +6,7 @@
 
 import { PassThrough } from "node:stream";
 
+import type { AppLoadContext, EntryContext } from "@remix-run/node";
 import { Response } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
 import isbot from "isbot";
@@ -14,11 +15,11 @@ import { renderToPipeableStream } from "react-dom/server";
 const ABORT_DELAY = 5_000;
 
 export default function handleRequest(
-  request,
-  responseStatusCode,
-  responseHeaders,
-  remixContext,
-  loadContext
+  request: Request,
+  responseStatusCode: number,
+  responseHeaders: Headers,
+  remixContext: EntryContext,
+  loadContext: AppLoadContext
 ) {
   return isbot(request.headers.get("user-agent"))
     ? handleBotRequest(
@@ -36,10 +37,10 @@ export default function handleRequest(
 }
 
 function handleBotRequest(
-  request,
-  responseStatusCode,
-  responseHeaders,
-  remixContext
+  request: Request,
+  responseStatusCode: number,
+  responseHeaders: Headers,
+  remixContext: EntryContext
 ) {
   return new Promise((resolve, reject) => {
     let shellRendered = false;
@@ -49,7 +50,6 @@ function handleBotRequest(
         url={request.url}
         abortDelay={ABORT_DELAY}
       />,
-
       {
         onAllReady() {
           shellRendered = true;
@@ -66,10 +66,10 @@ function handleBotRequest(
 
           pipe(body);
         },
-        onShellError(error) {
+        onShellError(error: unknown) {
           reject(error);
         },
-        onError(error) {
+        onError(error: unknown) {
           responseStatusCode = 500;
           // Log streaming rendering errors from inside the shell.  Don't log
           // errors encountered during initial shell rendering since they'll
@@ -86,10 +86,10 @@ function handleBotRequest(
 }
 
 function handleBrowserRequest(
-  request,
-  responseStatusCode,
-  responseHeaders,
-  remixContext
+  request: Request,
+  responseStatusCode: number,
+  responseHeaders: Headers,
+  remixContext: EntryContext
 ) {
   return new Promise((resolve, reject) => {
     let shellRendered = false;
@@ -99,7 +99,6 @@ function handleBrowserRequest(
         url={request.url}
         abortDelay={ABORT_DELAY}
       />,
-
       {
         onShellReady() {
           shellRendered = true;
@@ -116,10 +115,10 @@ function handleBrowserRequest(
 
           pipe(body);
         },
-        onShellError(error) {
+        onShellError(error: unknown) {
           reject(error);
         },
-        onError(error) {
+        onError(error: unknown) {
           responseStatusCode = 500;
           // Log streaming rendering errors from inside the shell.  Don't log
           // errors encountered during initial shell rendering since they'll
