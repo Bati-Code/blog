@@ -1,6 +1,6 @@
-import { db } from '~/utils/db.server';
+import type { ActionArgs, ActionFunction } from '@remix-run/node';
 import { json } from 'react-router';
-import { ActionArgs, ActionFunction } from '@remix-run/node';
+import { db } from '~/utils/db.server';
 
 export const loader = async () => {
   const count = await db.menu.count();
