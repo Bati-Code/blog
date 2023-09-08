@@ -3,8 +3,8 @@ import { json } from 'react-router';
 import { db } from '~/utils/db.server';
 
 export const loader = async () => {
-  const count = await db.menu.count();
-  return json({ count: count });
+  const result = await db.menu.findMany();
+  return json({ menu: result });
 };
 
 export const action: ActionFunction = async ({ request }: ActionArgs) => {
